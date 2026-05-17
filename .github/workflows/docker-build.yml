@@ -5,10 +5,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,17 +26,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
+      - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/dockerfile
-          push: true
-          tags: ghcr.io/a3467712660/xyzw-web-helper:latest
+          push: false
+          load: true
+          tags: xyzw-web-helper:latest
+
+      - name: Save and upload
+        run: |
+          docker save xyzw-web-helper:latest | gzip > xyzw-web-helper.tar.gz
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xyzw-web-helper-image
+          path: xyzw-web-helper.tar.gz
+          retention-days: 3
