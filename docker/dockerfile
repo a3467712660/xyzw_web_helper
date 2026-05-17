@@ -4,7 +4,7 @@ VOLUME /app/web
 COPY ./dist /app/web
 
 VOLUME /etc/nginx/conf.d
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /app
 
